@@ -419,14 +419,40 @@ var STORE_KEY = 'oche_darts_v1';
 function defaultState(){
   return { players: [], history: [] };
 }
+// Player/history records come from a shared store that other devices (and
+// older versions of this app) write to, so never trust their shape: one
+// malformed record must not take down the whole screen.
+function normalizePlayers(list){
+  if(!Array.isArray(list)) return [];
+  return list.filter(function(p){ return p && p.id; }).map(function(p){
+    var fresh = freshPlayerStats();
+    var s = (p && p.stats) || {};
+    var std = {}, oto = {};
+    Object.keys(fresh.standard).forEach(function(k){
+      std[k] = (s.standard && s.standard[k] !== undefined) ? s.standard[k] : fresh.standard[k];
+    });
+    Object.keys(fresh.oneTwoOne).forEach(function(k){
+      oto[k] = (s.oneTwoOne && s.oneTwoOne[k] !== undefined) ? s.oneTwoOne[k] : fresh.oneTwoOne[k];
+    });
+    return {
+      id: String(p.id),
+      name: (typeof p.name === 'string' && p.name.trim()) ? p.name : 'Player',
+      createdAt: p.createdAt || new Date().toISOString(),
+      lastPlayed: p.lastPlayed || null,
+      stats: { standard: std, oneTwoOne: oto }
+    };
+  });
+}
+function normalizeHistory(list){
+  if(!Array.isArray(list)) return [];
+  return list.filter(function(h){ return h && Array.isArray(h.playerNames); });
+}
 function loadState(){
   try{
     var raw = localStorage.getItem(STORE_KEY);
     if(!raw) return defaultState();
     var s = JSON.parse(raw);
-    if(!s.players) s.players = [];
-    if(!s.history) s.history = [];
-    return s;
+    return { players: normalizePlayers(s.players), history: normalizeHistory(s.history) };
   }catch(e){ return defaultState(); }
 }
 var localRev = 0; // bumped on every local write; the server ignores any write older than what it already has
@@ -462,8 +488,8 @@ function pullRemoteState(){
   fetch('/api/state').then(function(r){ return r.json(); }).then(function(remote){
     if(!remote) return;
     if((remote.rev||0) >= localRev){
-      state.players = remote.players || [];
-      state.history = remote.history || [];
+      state.players = normalizePlayers(remote.players);
+      state.history = normalizeHistory(remote.history);
       localRev = remote.rev || localRev;
       try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
       render();

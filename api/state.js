@@ -1,38 +1,33 @@
-const { neon } = require('@neondatabase/serverless');
+const { put, list } = require('@vercel/blob');
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.NEON_DATABASE_URL;
+const BLOB_PATH = 'oche-state.json';
 
-const sql = neon(connectionString);
-
-async function ensureTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS oche_state (
-      id INT PRIMARY KEY DEFAULT 1,
-      data JSONB NOT NULL,
-      rev INT NOT NULL DEFAULT 0
-    )
-  `;
+async function readState() {
+  const { blobs } = await list({ prefix: BLOB_PATH, limit: 10 });
+  const blob = blobs.find(function (b) { return b.pathname === BLOB_PATH; });
+  if (!blob) return { players: [], history: [], rev: 0 };
+  // Cache-bust: blob URLs sit behind a CDN, and a stale read here would show
+  // one device an out-of-date scoreboard.
+  const resp = await fetch(blob.url + '?t=' + Date.now(), { cache: 'no-store' });
+  if (!resp.ok) return { players: [], history: [], rev: 0 };
+  const data = await resp.json();
+  return {
+    players: Array.isArray(data.players) ? data.players : [],
+    history: Array.isArray(data.history) ? data.history : [],
+    rev: Number(data.rev) || 0
+  };
 }
 
 module.exports = async function handler(req, res) {
-  if (!connectionString) {
-    res.status(500).json({ error: 'No database connection string found. Set DATABASE_URL (or POSTGRES_URL) in the Vercel project env vars.' });
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    res.status(500).json({ error: 'No BLOB_READ_WRITE_TOKEN set. Connect a Vercel Blob store to this project.' });
     return;
   }
   try {
-    await ensureTable();
-
     if (req.method === 'GET') {
-      const rows = await sql`SELECT data, rev FROM oche_state WHERE id = 1`;
-      if (rows.length === 0) {
-        res.status(200).json({ players: [], history: [], rev: 0 });
-        return;
-      }
-      const row = rows[0];
-      res.status(200).json({ players: row.data.players || [], history: row.data.history || [], rev: row.rev });
+      const state = await readState();
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(200).json(state);
       return;
     }
 
@@ -41,23 +36,30 @@ module.exports = async function handler(req, res) {
       const players = Array.isArray(body.players) ? body.players : [];
       const history = Array.isArray(body.history) ? body.history : [];
       const clientRev = Number(body.rev) || 0;
-      const payload = JSON.stringify({ players, history });
 
-      // Atomic, race-free upsert: only apply this write if its revision is not
-      // older than whatever is already stored (last-writer-wins by revision,
-      // enforced by the database itself rather than by request arrival order).
-      await sql`
-        INSERT INTO oche_state (id, data, rev) VALUES (1, ${payload}::jsonb, ${clientRev})
-        ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, rev = EXCLUDED.rev
-        WHERE oche_state.rev <= EXCLUDED.rev
-      `;
-      res.status(200).json({ ok: true });
+      // Revision guard: a write that is behind what is already stored is a
+      // straggler from an earlier save, so drop it rather than let it undo
+      // newer data.
+      const current = await readState();
+      if (clientRev < current.rev) {
+        res.status(200).json({ ok: false, stale: true, rev: current.rev });
+        return;
+      }
+
+      await put(BLOB_PATH, JSON.stringify({ players: players, history: history, rev: clientRev }), {
+        access: 'public',
+        contentType: 'application/json',
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        cacheControlMaxAge: 0
+      });
+      res.status(200).json({ ok: true, rev: clientRev });
       return;
     }
 
     res.status(405).json({ error: 'Method not allowed' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: String(err && err.message || err) });
+    res.status(500).json({ error: String((err && err.message) || err) });
   }
 };

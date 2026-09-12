@@ -1,45 +1,39 @@
-# Oche — self-hosted setup
+# Oche — darts scorer
 
-A darts scorer (501/301 double-out + the 121 team game) with player profiles
-and stats synced through a Postgres database, deployable on Vercel like your
-tennis app.
+501/301 double-out and the 121 team game, with player profiles and stats
+shared across every device that opens the page.
 
 ## What's here
 
-- `public/index.html` — the whole app (frontend), plus `manifest.json` and
-  icons for "Add to Home Screen" on iOS/Android.
+- `public/index.html` — the whole app, plus `manifest.json` and icons so it
+  can be added to an iPhone/Android home screen and run full-screen.
 - `api/state.js` — one serverless function: `GET` returns the saved players
-  and game history, `POST` saves a new version. Backed by a single Postgres
-  table (`oche_state`), created automatically on first request.
+  and game history, `POST` saves a new version. Backed by Vercel Blob.
 
 ## Setup
 
-1. **Database.** If you already have a Postgres/Neon database from the
-   tennis app, you can reuse it — this app creates its own table
-   (`oche_state`) and won't touch anything else. Otherwise add one from the
-   Vercel dashboard: Project → Storage → Create Database → Postgres (Neon).
+1. **Storage.** In the Vercel project: Storage → Create Database → Blob.
+   Connect it to this project. Vercel then sets `BLOB_READ_WRITE_TOKEN`
+   automatically — that's the only environment variable needed.
 
-2. **Env var.** This code reads the connection string from `DATABASE_URL`,
-   falling back to `POSTGRES_URL` or `NEON_DATABASE_URL`. When you attach a
-   Postgres database to the project in Vercel, it sets one of these
-   automatically — check Settings → Environment Variables and rename if
-   needed so one of those three names is set.
+2. **Deploy.** Push to GitHub and import the repo in Vercel (no framework
+   preset — it picks up `api/` as functions and `public/` as static files).
 
-3. **Deploy.**
-   - Push this folder to a GitHub repo.
-   - In Vercel: New Project → import that repo → Deploy. No framework
-     preset needed (it auto-detects the `api/` folder as serverless
-     functions and `public/` as static files).
+## How saving works
 
-4. **Open it** at the Vercel URL you're given. No login required — this is a
-   plain public page. (If you'd rather keep it private, that's a call for
-   Vercel's own access-control settings, not something this app handles.)
+Every change writes the whole state (players + history) as one JSON blob,
+tagged with an incrementing revision number. The API rejects any write whose
+revision is behind what's already stored, so a slow request from one device
+can't undo a newer change from another. Records read back from storage are
+normalised on the way in, so a malformed or partial record can't break the
+page.
+
+If the API is unreachable, the app keeps working from that browser's local
+storage and syncs again when it can.
 
 ## Notes
 
-- Player profiles and stats live in the database — same data everywhere the
-  page is opened, no login needed.
 - The "Look & feel" setting (Classic chalkboard/paper vs. Neon Arcade) is
-  saved per-browser in local storage, not synced — a per-device preference.
-- If the API is briefly unreachable, the app falls back to whatever's cached
-  in that browser's local storage and keeps working from there.
+  saved per-browser, not synced — it's a per-device preference.
+- Cross-device updates arrive on page load, on tab refocus, and via a poll
+  every 15 seconds.
