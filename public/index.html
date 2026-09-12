@@ -1,0 +1,1484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Oche</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#efe9da">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Oche">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Work+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&family=Orbitron:wght@600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#efe9da;
+    --bg-2:#e7dfc9;
+    --surface:#fffdf7;
+    --surface-2:#f7f1e0;
+    --ink:#1f2a22;
+    --ink-muted:#6b7768;
+    --border:#d9d0b8;
+    --red:#b23a30;
+    --red-soft:#b23a3022;
+    --green:#2f6b45;
+    --green-soft:#2f6b4520;
+    --gold:#a67526;
+    --gold-soft:#a6752622;
+    --shadow: 0 10px 24px -12px rgba(31,42,34,0.25);
+    --danger:#a3352c;
+    /* theme-decision tokens: identity of the current skin, not just its colors */
+    --texture:none;
+    --scanline:none;
+    --card-border-style:solid;
+    --frame-bg:transparent;
+    --frame-pad:0;
+    --frame-surface-bg:transparent;
+    --frame-surface-pad:0;
+    --tray-display:none;
+    --display-font:'Kalam', cursive;
+    --number-font:'Oswald', ui-sans-serif, sans-serif;
+    --number-glow:none;
+    --brand-case:none;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#101c16;
+      --bg-2:#0c1611;
+      --surface:#1a2b21;
+      --surface-2:#213627;
+      --ink:#f1eee1;
+      --ink-muted:#93a99b;
+      --border:#2e4536;
+      --red:#e2564a;
+      --red-soft:#e2564a2a;
+      --green:#63bb82;
+      --green-soft:#63bb8225;
+      --gold:#e2b45b;
+      --gold-soft:#e2b45b25;
+      --shadow: 0 12px 28px -12px rgba(0,0,0,0.55);
+      --danger:#e2564a;
+      --texture:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      --card-border-style:dashed;
+      --frame-bg:linear-gradient(160deg,#8a5f37,#5a3c20 55%,#432c17);
+      --frame-pad:14px 14px 0;
+      --frame-surface-bg:#182920;
+      --frame-surface-pad:10px;
+      --tray-display:flex;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101c16;
+    --bg-2:#0c1611;
+    --surface:#1a2b21;
+    --surface-2:#213627;
+    --ink:#f1eee1;
+    --ink-muted:#93a99b;
+    --border:#2e4536;
+    --red:#e2564a;
+    --red-soft:#e2564a2a;
+    --green:#63bb82;
+    --green-soft:#63bb8225;
+    --gold:#e2b45b;
+    --gold-soft:#e2b45b25;
+    --shadow: 0 12px 28px -12px rgba(0,0,0,0.55);
+    --danger:#e2564a;
+    --texture:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --card-border-style:dashed;
+    --frame-bg:linear-gradient(160deg,#8a5f37,#5a3c20 55%,#432c17);
+    --frame-pad:14px 14px 0;
+    --frame-surface-bg:#182920;
+    --frame-surface-pad:10px;
+    --tray-display:flex;
+  }
+  :root[data-scheme="neon"]{
+    --bg:#07070d;
+    --bg-2:#0b0d18;
+    --surface:#0d0f1c;
+    --surface-2:#12152a;
+    --ink:#dff9ff;
+    --ink-muted:#5c7a8a;
+    --border:#1c2336;
+    --red:#ff2e88;
+    --red-soft:#ff2e8822;
+    --green:#2ee6d6;
+    --green-soft:#2ee6d625;
+    --gold:#ffd23f;
+    --gold-soft:#ffd23f22;
+    --shadow: 0 0 22px -6px rgba(255,46,136,.35);
+    --danger:#ff2e88;
+    --texture:none;
+    --scanline:repeating-linear-gradient(rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
+    --card-border-style:solid;
+    --frame-bg:transparent;
+    --frame-pad:0;
+    --frame-surface-bg:transparent;
+    --frame-surface-pad:0;
+    --tray-display:none;
+    --display-font:'Orbitron', sans-serif;
+    --number-font:'Orbitron', sans-serif;
+    --number-glow:0 0 10px currentColor;
+    --brand-case:uppercase;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background-color:var(--bg);
+    background-image:
+      var(--scanline),
+      var(--texture),
+      radial-gradient(ellipse at 20% -10%, var(--bg-2), transparent 60%);
+    color:var(--ink);
+    font-family:'Work Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3{ text-wrap:balance; margin:0; }
+  .chalk{ font-family:var(--display-font); text-transform:var(--brand-case); }
+  .num{ font-family:var(--number-font); font-variant-numeric: tabular-nums; letter-spacing:0.01em; text-shadow:var(--number-glow); }
+  button{ font-family:inherit; color:inherit; cursor:pointer; }
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--gold); outline-offset:2px;
+  }
+  ::selection{ background:var(--gold-soft); }
+
+  /* ===== App shell ===== */
+  .shell{ max-width:1080px; margin:0 auto; padding:0 16px calc(120px + env(safe-area-inset-bottom)); }
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(var(--bg) 80%, transparent);
+    padding:calc(14px + env(safe-area-inset-top)) 16px 8px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    max-width:1080px; margin:0 auto;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-word{ font-size:1.6rem; font-weight:700; color:var(--ink); line-height:1; }
+  .brand-sub{ font-size:0.68rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.12em; margin-top:2px; }
+  :root[data-scheme="neon"] .brand-word{ text-shadow:0 0 10px var(--gold); }
+  :root[data-scheme="neon"] .board-icon{ filter:drop-shadow(0 0 4px rgba(46,230,214,.55)); }
+  @media (prefers-reduced-motion: no-preference){
+    :root[data-scheme="neon"] .brand-word{ animation:brandFlicker 6s infinite; }
+    @keyframes brandFlicker{ 0%,95%,100%{opacity:1;} 96%{opacity:.6;} 97%{opacity:1;} 98%{opacity:.75;} }
+  }
+  .settings-btn{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--surface-2);
+    color:var(--ink-muted); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex:none;
+  }
+  nav.tabs{ display:flex; gap:6px; background:var(--surface-2); padding:4px; border-radius:999px; border:1px solid var(--border); }
+  nav.tabs button{
+    border:none; background:transparent; color:var(--ink-muted); font-weight:600; font-size:0.85rem;
+    padding:8px 16px; border-radius:999px; transition:background .15s, color .15s;
+  }
+  nav.tabs button.active{ background:var(--surface); color:var(--ink); box-shadow:var(--shadow); }
+
+  main{ padding-top:12px; display:flex; flex-direction:column; gap:18px; }
+
+  /* ===== generic bits ===== */
+  .eyebrow{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--ink-muted); font-weight:600; }
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:18px; box-shadow:var(--shadow);
+  }
+  .card.flat{ box-shadow:none; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:640px){ .grid-2{ grid-template-columns:1fr; } }
+  .btn{
+    border:1px solid var(--border); background:var(--surface-2); color:var(--ink);
+    padding:12px 18px; border-radius:11px; font-weight:600; font-size:0.95rem;
+    transition:transform .08s ease, background .15s;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn.primary{ background:var(--green); border-color:var(--green); color:#fbfbf4; }
+  .btn.primary:hover{ filter:brightness(1.06); }
+  .btn.danger{ background:transparent; border-color:var(--danger); color:var(--danger); }
+  .btn.ghost{ background:transparent; border:1px solid var(--border); }
+  .btn.block{ width:100%; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    border:1.5px solid var(--border); background:var(--surface-2); color:var(--ink);
+    padding:9px 15px; border-radius:999px; font-weight:600; font-size:0.9rem;
+    transition:all .12s;
+  }
+  .chip.selected{ background:var(--green-soft); border-color:var(--green); color:var(--green); }
+  .chip .x{ opacity:0.6; }
+
+  input[type=text], input[type=number]{
+    background:var(--surface-2); border:1.5px solid var(--border); color:var(--ink);
+    border-radius:10px; padding:11px 13px; font-size:1rem; font-family:inherit; width:100%;
+  }
+  label.field{ display:flex; flex-direction:column; gap:6px; font-size:0.85rem; color:var(--ink-muted); font-weight:600; }
+
+  .divider{ height:1px; background:var(--border); border:none; margin:4px 0; }
+
+  .banner{
+    padding:12px 14px; border-radius:10px; font-weight:600; font-size:0.92rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .banner.bust{ background:var(--red-soft); color:var(--red); }
+  .banner.win{ background:var(--green-soft); color:var(--green); }
+  .banner.info{ background:var(--gold-soft); color:var(--gold); }
+
+  .resume-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
+    background:var(--gold-soft); border:1.5px solid var(--gold); color:var(--ink);
+    border-radius:12px; padding:12px 16px; font-weight:600; font-size:0.9rem; text-align:left;
+  }
+  .resume-banner .go{ color:var(--gold); white-space:nowrap; font-weight:700; }
+
+  /* ===== home ===== */
+  .mode-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:640px){ .mode-grid{ grid-template-columns:1fr; } }
+  .mode-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:22px; text-align:left; box-shadow:var(--shadow); position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .mode-card .ring{
+    position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%;
+    border:16px solid var(--surface-2); opacity:0.6;
+  }
+  .mode-card h2{ font-size:1.5rem; }
+  .mode-card p{ margin:0; color:var(--ink-muted); font-size:0.9rem; line-height:1.4; }
+  .mode-card .go{ margin-top:auto; align-self:flex-start; }
+
+  .board-icon circle{ }
+  .lb-row{ display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
+  .lb-row:last-child{ border-bottom:none; }
+  .avatar{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:0.85rem; color:#fff; flex:none;
+  }
+  .lb-name{ font-weight:600; flex:1; }
+  .lb-stat{ font-family:'Oswald'; font-variant-numeric:tabular-nums; color:var(--ink-muted); font-size:0.9rem; }
+
+  .hist-row{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.87rem; }
+  .hist-row:last-child{ border-bottom:none; }
+  .hist-row .who{ color:var(--ink); font-weight:600; }
+  .hist-row .meta{ color:var(--ink-muted); }
+
+  /* ===== players ===== */
+  .players-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+  .player-card{ display:flex; align-items:center; gap:12px; text-align:left; }
+  .player-card .info{ flex:1; min-width:0; }
+  .player-card .name{ font-weight:700; font-size:1.02rem; }
+  .player-card .sub{ font-size:0.78rem; color:var(--ink-muted); }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  @media (max-width:520px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+  .stat-tile{ background:var(--surface-2); border-radius:10px; padding:12px; text-align:center; }
+  .stat-tile .v{ font-family:'Oswald'; font-size:1.5rem; font-weight:600; font-variant-numeric:tabular-nums; }
+  .stat-tile .v.gold{ color:var(--gold); }
+  .stat-tile .l{ font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-muted); margin-top:2px; }
+
+  /* ===== setup ===== */
+  .seg{ display:flex; gap:8px; flex-wrap:wrap; }
+  .seg button{ flex:1; min-width:100px; }
+  .seg button.on, .btn.on{ background:var(--green); border-color:var(--green); color:#fbfbf4; }
+
+  /* ===== live game ===== */
+  .score-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .score-card{
+    background:var(--surface); border:2px var(--card-border-style) var(--border); border-radius:14px; padding:14px;
+    text-align:center; box-shadow:var(--shadow); transition:border-color .2s, box-shadow .2s;
+    position:relative;
+  }
+  .score-card.active{ border-color:var(--red); border-style:solid; box-shadow:0 0 0 3px var(--red-soft), var(--shadow); }
+  .score-card.winner{ border-color:var(--green); border-style:solid; box-shadow:0 0 0 3px var(--green-soft), var(--shadow); }
+  .score-card .turn-badge{
+    position:absolute; top:-11px; left:50%; transform:translateX(-50%);
+    background:var(--red); color:#fff; font-size:0.65rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.08em; padding:3px 10px; border-radius:999px;
+  }
+  .score-card .pname{ font-weight:700; font-size:0.95rem; margin-bottom:2px; }
+  .score-card .premain{ font-family:var(--number-font); font-size:2.6rem; font-weight:600; line-height:1; font-variant-numeric:tabular-nums; text-shadow:var(--number-glow); }
+  .score-card .plegs{ font-size:0.75rem; color:var(--ink-muted); margin-top:4px; }
+
+  .target-hero{
+    background:linear-gradient(160deg, var(--surface-2), var(--surface));
+    border:1px solid var(--border); border-radius:18px; padding:22px; text-align:center; box-shadow:var(--shadow);
+  }
+  .target-hero .eyebrow{ margin-bottom:4px; }
+  .target-hero .tval{ font-family:var(--number-font); font-size:4rem; font-weight:600; line-height:1; text-shadow:var(--number-glow); }
+  .target-hero .tmeta{ margin-top:6px; color:var(--ink-muted); font-size:0.85rem; }
+
+  /* ===== chalkboard frame (chalk theme only; inert elsewhere) ===== */
+  .board-frame{ background:var(--frame-bg); border-radius:14px; padding:var(--frame-pad); }
+  .board-surface{ background:var(--frame-surface-bg); background-image:var(--texture); border-radius:8px 8px 0 0; padding:var(--frame-surface-pad); }
+  .chalk-tray{
+    display:var(--tray-display); align-items:center; gap:10px; height:20px; margin-top:-1px; padding:0 18px;
+    border-radius:0 0 10px 10px; background:linear-gradient(180deg,#6b4726,#432c17);
+    box-shadow:inset 0 3px 6px -2px rgba(0,0,0,.55);
+  }
+  .chalk-tray .stick{ width:26px; height:7px; background:#f2efe2; border-radius:3px; box-shadow:0 1px 1px rgba(0,0,0,.35); }
+  .chalk-tray .eraser{ width:22px; height:9px; background:#8d8478; border-radius:2px; box-shadow:0 1px 1px rgba(0,0,0,.35); }
+  .chalk-tray .dust{ width:30px; height:4px; border-radius:50%; background:rgba(238,232,216,.35); filter:blur(1.5px); }
+
+  .oneone-players{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:520px){ .oneone-players{ grid-template-columns:1fr; } }
+
+  .tally svg{ display:block; }
+  .tally-row{ display:flex; align-items:center; gap:8px; justify-content:center; margin-top:6px; }
+  .tally-num{ font-family:'Oswald'; font-size:1.1rem; color:var(--gold); font-weight:600; }
+
+  .dots{ display:flex; gap:6px; justify-content:center; margin-top:8px; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:var(--border); }
+  .dot.on{ background:var(--red); }
+  .dot.done{ background:var(--green); }
+
+  /* ===== keypad ===== */
+  .keypad-wrap{ position:sticky; bottom:0; z-index:15; padding-top:6px; }
+  .keypad{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px 16px 0 0;
+    padding:14px 14px calc(14px + env(safe-area-inset-bottom)); box-shadow:0 -10px 26px -14px rgba(0,0,0,0.28);
+  }
+  @media (min-width:640px){ .keypad{ border-radius:16px; } }
+  .display-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .input-display{
+    flex:1; background:var(--surface-2); border:1.5px solid var(--border); border-radius:10px;
+    padding:10px 14px; font-family:'Oswald'; font-size:1.8rem; text-align:right; font-variant-numeric:tabular-nums;
+    min-height:1.6em;
+  }
+  .input-display .ph{ color:var(--ink-muted); font-size:1rem; font-family:'Work Sans'; }
+  .quick-row{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:8px; }
+  .quick-row button{
+    flex:none; background:var(--surface-2); border:1px solid var(--border); border-radius:8px;
+    padding:7px 12px; font-weight:600; font-family:'Oswald'; font-size:0.95rem; color:var(--ink);
+  }
+  .padgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .padgrid button{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    font-family:'Oswald'; font-size:1.3rem; padding:14px 0; color:var(--ink);
+  }
+  .padgrid button:active{ background:var(--border); }
+  .padgrid .enter{ grid-row:span 2; background:var(--green); border-color:var(--green); color:#fbfbf4; font-family:'Work Sans'; font-size:1rem; }
+  .padgrid .clear{ color:var(--red); }
+
+  /* ===== modal ===== */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(10,16,12,0.55); z-index:40;
+    display:flex; align-items:flex-end; justify-content:center; padding:0;
+  }
+  @media (min-width:640px){ .modal-backdrop{ align-items:center; } }
+  .modal{
+    background:var(--surface); border-radius:18px 18px 0 0; padding:24px 20px; width:100%; max-width:440px;
+    box-shadow:var(--shadow); text-align:center;
+  }
+  @media (min-width:640px){ .modal{ border-radius:18px; } }
+  .modal h3{ font-size:1.2rem; margin-bottom:6px; }
+  .modal p{ color:var(--ink-muted); font-size:0.9rem; margin:0 0 16px; }
+  .modal .btn-row{ justify-content:center; }
+
+  .empty{ text-align:center; padding:30px 10px; color:var(--ink-muted); }
+  .empty .big{ font-size:2rem; margin-bottom:6px; }
+
+  footer.note{ text-align:center; color:var(--ink-muted); font-size:0.75rem; padding:18px 0 8px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <svg class="board-icon" width="34" height="34" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="18" fill="var(--surface-2)" stroke="var(--border)"/>
+        <circle cx="20" cy="20" r="13.5" fill="var(--red)"/>
+        <circle cx="20" cy="20" r="9.5" fill="var(--surface-2)"/>
+        <circle cx="20" cy="20" r="5.5" fill="var(--green)"/>
+        <circle cx="20" cy="20" r="2" fill="var(--gold)"/>
+      </svg>
+      <div>
+        <div class="brand-word chalk">Oche</div>
+        <div class="brand-sub">darts scorer</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <nav class="tabs" id="mainNav">
+        <button data-nav="home">Home</button>
+        <button data-nav="players">Players</button>
+      </nav>
+      <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">&#9881;</button>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer class="note">Player profiles and stats sync to this page for every device you open it on.</footer>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* ===================== storage ===================== */
+var STORE_KEY = 'oche_darts_v1';
+function defaultState(){
+  return { players: [], history: [] };
+}
+function loadState(){
+  try{
+    var raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return defaultState();
+    var s = JSON.parse(raw);
+    if(!s.players) s.players = [];
+    if(!s.history) s.history = [];
+    return s;
+  }catch(e){ return defaultState(); }
+}
+var localRev = 0; // bumped on every local write; the server ignores any write older than what it already has
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+  localRev += 1;
+  fetch('/api/state', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ players: state.players, history: state.history, rev: localRev })
+  }).catch(function(){ /* stay local-only if the API is unreachable */ });
+}
+var state = loadState();
+
+/* ===================== theme ===================== */
+var THEME_KEY = 'oche_theme_v1';
+function loadTheme(){
+  try{ return localStorage.getItem(THEME_KEY) || 'classic'; }catch(e){ return 'classic'; }
+}
+function applyTheme(t){
+  if(t==='neon') document.documentElement.setAttribute('data-scheme','neon');
+  else document.documentElement.removeAttribute('data-scheme');
+}
+var appTheme = loadTheme();
+applyTheme(appTheme);
+function setTheme(t){
+  appTheme = t;
+  applyTheme(t);
+  try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
+}
+
+function pullRemoteState(){
+  fetch('/api/state').then(function(r){ return r.json(); }).then(function(remote){
+    if(!remote) return;
+    if((remote.rev||0) >= localRev){
+      state.players = remote.players || [];
+      state.history = remote.history || [];
+      localRev = remote.rev || localRev;
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+      render();
+    }
+    // else: server data is behind a write we already made locally — ignore it
+  }).catch(function(){ /* stay on local cache if the API is unreachable */ });
+}
+(function initRemote(){
+  pullRemoteState();
+  // no push notifications from a plain REST API, so poll for changes made on other devices
+  setInterval(pullRemoteState, 15000);
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible') pullRemoteState();
+  });
+})();
+
+/* ===================== helpers ===================== */
+function uid(prefix){
+  return (prefix||'id') + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function fmtDate(iso){
+  var d = new Date(iso);
+  return d.toLocaleDateString(undefined,{ day:'numeric', month:'short' });
+}
+function avg3(totalScored, dartsThrown){
+  if(!dartsThrown) return 0;
+  return (totalScored/dartsThrown)*3;
+}
+function fmtAvg(n){ return n.toFixed(1); }
+var AVATAR_COLORS = ['#b23a30','#2f6b45','#a67526','#3a6f9c','#8a4b8f','#c2703b'];
+function avatarColor(id){
+  var sum=0; for(var i=0;i<id.length;i++) sum+=id.charCodeAt(i);
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length];
+}
+function initials(name){
+  var parts = name.trim().split(/\s+/);
+  return ((parts[0]||'')[0]||'?').toUpperCase() + ((parts[1]||'')[0]||'').toUpperCase();
+}
+
+function freshPlayerStats(){
+  return {
+    standard:{ gamesPlayed:0, gamesWon:0, legsPlayed:0, legsWon:0, dartsThrown:0, totalScored:0,
+               highestCheckout:0, count180:0, count140:0, count100:0, bestLegDarts:null },
+    oneTwoOne:{ sessionsPlayed:0, roundsPlayed:0, roundsWon:0, dartsThrown:0, totalScored:0,
+                bestTargetHit:0, highestCheckout:0, count180:0 }
+  };
+}
+function getPlayer(id){
+  for(var i=0;i<state.players.length;i++) if(state.players[i].id===id) return state.players[i];
+  return null;
+}
+function addPlayer(name){
+  name = name.trim();
+  if(!name) return null;
+  var p = { id: uid('p'), name: name, createdAt: new Date().toISOString(), lastPlayed:null, stats: freshPlayerStats() };
+  state.players.push(p);
+  saveState();
+  return p;
+}
+function pushHistory(entry){
+  entry.id = uid('h');
+  entry.date = new Date().toISOString();
+  state.history.unshift(entry);
+  if(state.history.length>25) state.history.length = 25;
+  saveState();
+}
+
+/* ===================== nav / view state ===================== */
+var view = { name:'home', params:{} };
+var ui = {}; // transient per-view UI state, reset on nav()
+var session = { standard:null, oneTwoOne:null }; // in-progress games, survive nav()
+function nav(name, params, uiSeed){
+  view = { name:name, params: params||{} };
+  ui = uiSeed || {};
+  render();
+  window.scrollTo({top:0});
+}
+
+/* ===================== app root render ===================== */
+var app = document.getElementById('app');
+
+function render(){
+  document.querySelectorAll('#mainNav button').forEach(function(b){
+    b.classList.toggle('active', (view.name==='home' && b.dataset.nav==='home') ||
+      (['players','playerDetail'].indexOf(view.name)>=0 && b.dataset.nav==='players'));
+  });
+  var html = '';
+  switch(view.name){
+    case 'home': html = renderHome(); break;
+    case 'players': html = renderPlayers(); break;
+    case 'playerDetail': html = renderPlayerDetail(view.params.id); break;
+    case 'standardSetup': html = renderStandardSetup(); break;
+    case 'standardGame': html = renderStandardGame(); break;
+    case 'oneTwoOneSetup': html = renderOneTwoOneSetup(); break;
+    case 'oneTwoOneGame': html = renderOneTwoOneGame(); break;
+    case 'standardSummary': html = renderStandardSummary(); break;
+    case 'oneTwoOneSummary': html = renderOneTwoOneSummary(); break;
+    default: html = renderHome();
+  }
+  app.innerHTML = renderResumeBanner() + html + renderModal();
+}
+
+function renderResumeBanner(){
+  var bits = '';
+  if(session.standard && view.name!=='standardGame'){
+    var g = session.standard;
+    bits += '<button class="resume-banner" data-action="nav" data-view="standardGame">'+
+      '<span>&#127919; '+g.startScore+' in progress &middot; '+g.players.map(function(p){return esc(p.name);}).join(' vs ')+'</span>'+
+      '<span class="go">Resume &rarr;</span></button>';
+  }
+  if(session.oneTwoOne && view.name!=='oneTwoOneGame'){
+    var g = session.oneTwoOne;
+    bits += '<button class="resume-banner" data-action="nav" data-view="oneTwoOneGame">'+
+      '<span>&#127919; 121 game in progress &middot; '+g.players.map(function(p){return esc(p.name);}).join(' &amp; ')+'</span>'+
+      '<span class="go">Resume &rarr;</span></button>';
+  }
+  return bits;
+}
+
+document.getElementById('mainNav').addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-nav]');
+  if(!btn) return;
+  nav(btn.dataset.nav==='home' ? 'home' : 'players');
+});
+document.getElementById('settingsBtn').addEventListener('click', function(){
+  ui.modal = { type:'settings' };
+  render();
+});
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  var lb = state.players.slice().filter(function(p){ return p.stats.standard.dartsThrown>0 || p.stats.oneTwoOne.dartsThrown>0; })
+    .sort(function(a,b){
+      return avg3(b.stats.standard.totalScored,b.stats.standard.dartsThrown) - avg3(a.stats.standard.totalScored,a.stats.standard.dartsThrown);
+    }).slice(0,4);
+
+  var lbHtml = lb.length ? lb.map(function(p){
+    var a = avg3(p.stats.standard.totalScored, p.stats.standard.dartsThrown);
+    return '<div class="lb-row">'+
+      '<div class="avatar" style="background:'+avatarColor(p.id)+'">'+esc(initials(p.name))+'</div>'+
+      '<div class="lb-name">'+esc(p.name)+'</div>'+
+      '<div class="lb-stat">'+fmtAvg(a)+' avg</div>'+
+      '</div>';
+  }).join('') : '<div class="empty" style="padding:14px;">Play a game to start a leaderboard.</div>';
+
+  var hist = state.history.slice(0,5);
+  var histHtml = hist.length ? hist.map(function(h){
+    var names = h.playerNames.join(', ');
+    var meta = h.mode==='standard' ? (h.startScore+' · '+h.summary) : ('121 game · '+h.summary);
+    return '<div class="hist-row"><div><div class="who">'+esc(names)+'</div><div class="meta">'+esc(meta)+'</div></div><div class="meta">'+fmtDate(h.date)+'</div></div>';
+  }).join('') : '<div class="empty" style="padding:14px;">No games yet.</div>';
+
+  return ''+
+  '<div class="mode-grid">'+
+    '<button class="mode-card" data-action="nav" data-view="standardSetup">'+
+      '<span class="ring"></span>'+
+      '<span class="eyebrow">Classic checkout</span>'+
+      '<h2 class="chalk">501 / 301</h2>'+
+      '<p>Standard double-out scoring for 1&ndash;4 players. Pick a starting score or set your own.</p>'+
+      '<span class="btn primary go">Set up match</span>'+
+    '</button>'+
+    '<button class="mode-card" data-action="nav" data-view="oneTwoOneSetup">'+
+      '<span class="ring"></span>'+
+      '<span class="eyebrow">Head to head</span>'+
+      '<h2 class="chalk">121 Game</h2>'+
+      '<p>Two players, one shared target. Nine darts and two efforts to hit it bang on a double.</p>'+
+      '<span class="btn primary go">Set up session</span>'+
+    '</button>'+
+  '</div>'+
+  '<div class="grid-2">'+
+    '<div class="card">'+
+      '<div class="eyebrow" style="margin-bottom:10px;">Leaderboard &middot; 3-dart average</div>'+
+      lbHtml+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="eyebrow" style="margin-bottom:10px;">Recent games</div>'+
+      histHtml+
+    '</div>'+
+  '</div>';
+}
+
+/* ===================== PLAYERS ===================== */
+function renderPlayerChip(p, selected){
+  return '<button class="chip'+(selected?' selected':'')+'" data-action="toggle-player" data-id="'+p.id+'">'+esc(p.name)+(selected?' <span class="x">&times;</span>':'')+'</button>';
+}
+
+function renderPlayers(){
+  var cards = state.players.map(function(p){
+    var std = p.stats.standard, o = p.stats.oneTwoOne;
+    var a = avg3(std.totalScored, std.dartsThrown);
+    return '<button class="card player-card" data-action="nav" data-view="playerDetail" data-id="'+p.id+'">'+
+      '<div class="avatar" style="width:44px;height:44px;font-size:1rem;background:'+avatarColor(p.id)+'">'+esc(initials(p.name))+'</div>'+
+      '<div class="info">'+
+        '<div class="name">'+esc(p.name)+'</div>'+
+        '<div class="sub">'+fmtAvg(a)+' avg &middot; '+std.legsWon+' legs won &middot; '+o.roundsWon+' 121 rounds</div>'+
+      '</div>'+
+    '</button>';
+  }).join('');
+
+  return ''+
+  '<div class="card">'+
+    '<div class="eyebrow" style="margin-bottom:10px;">Add a player</div>'+
+    '<form id="addPlayerForm" style="display:flex; gap:10px;">'+
+      '<input type="text" name="name" placeholder="Player name" maxlength="24" autocomplete="off" />'+
+      '<button class="btn primary" type="submit">Add</button>'+
+    '</form>'+
+  '</div>'+
+  (state.players.length ? '<div class="players-grid">'+cards+'</div>' :
+    '<div class="empty"><div class="big">&#127919;</div>No players yet &mdash; add your regulars above.</div>');
+}
+
+function renderPlayerDetail(id){
+  var p = getPlayer(id);
+  if(!p) return '<div class="empty">Player not found.</div>';
+  var s = p.stats.standard, o = p.stats.oneTwoOne;
+  var a = avg3(s.totalScored, s.dartsThrown);
+  var oa = avg3(o.totalScored, o.dartsThrown);
+  return ''+
+  '<div class="card" style="display:flex; align-items:center; gap:14px;">'+
+    '<div class="avatar" style="width:56px;height:56px;font-size:1.3rem;background:'+avatarColor(p.id)+'">'+esc(initials(p.name))+'</div>'+
+    '<div style="flex:1;">'+
+      '<h2 class="chalk" style="font-size:1.5rem;">'+esc(p.name)+'</h2>'+
+      '<div class="eyebrow">'+(p.lastPlayed ? 'Last played '+fmtDate(p.lastPlayed) : 'No games yet')+'</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="eyebrow" style="margin-bottom:10px;">501 / 301 stats</div>'+
+    '<div class="stat-grid">'+
+      statTile(s.gamesWon+'/'+s.gamesPlayed,'Matches won')+
+      statTile(s.legsWon+'/'+s.legsPlayed,'Legs won')+
+      statTile(fmtAvg(a),'3-dart avg')+
+      statTile(s.highestCheckout || '&mdash;','Highest checkout', true)+
+      statTile(s.bestLegDarts || '&mdash;','Best leg (darts)', true)+
+      statTile(s.count180,'180s', true)+
+      statTile(s.count140,'140+')+
+      statTile(s.count100,'100+')+
+      statTile(s.dartsThrown,'Darts thrown')+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="eyebrow" style="margin-bottom:10px;">121 game stats</div>'+
+    '<div class="stat-grid">'+
+      statTile(o.sessionsPlayed,'Sessions')+
+      statTile(o.roundsWon+'/'+o.roundsPlayed,'Rounds won')+
+      statTile(fmtAvg(oa),'3-dart avg')+
+      statTile(o.bestTargetHit || '&mdash;','Best target hit', true)+
+      statTile(o.highestCheckout || '&mdash;','Highest finish')+
+      statTile(o.count180,'180s', true)+
+    '</div>'+
+  '</div>'+
+  '<div class="btn-row">'+
+    '<button class="btn ghost" data-action="rename-player" data-id="'+p.id+'">Rename</button>'+
+    '<button class="btn ghost" data-action="reset-player-stats" data-id="'+p.id+'">Reset stats</button>'+
+    '<button class="btn danger" data-action="delete-player" data-id="'+p.id+'">Delete player</button>'+
+    '<button class="btn" data-action="nav" data-view="players">Back</button>'+
+  '</div>';
+}
+function statTile(val, label, gold){
+  return '<div class="stat-tile"><div class="v'+(gold?' gold':'')+'">'+val+'</div><div class="l">'+label+'</div></div>';
+}
+
+/* ===================== STANDARD: setup ===================== */
+function scoreDefaults(){ return { startScore:501, legsToWin:1, selected:[], starter:null }; }
+function ensureSetup(){ if(!ui.setup) ui.setup = scoreDefaults(); return ui.setup; }
+
+function renderStandardSetup(){
+  var s = ensureSetup();
+  var scoreBtn = function(v){ return '<button type="button" class="btn '+(s.startScore===v?'on':'')+'" data-action="std-score" data-v="'+v+'">'+v+'</button>'; };
+  var legBtn = function(v,label){ return '<button type="button" class="btn '+(s.legsToWin===v?'on':'')+'" data-action="std-legs" data-v="'+v+'">'+label+'</button>'; };
+  var chips = state.players.map(function(p){ return renderPlayerChip(p, s.selected.indexOf(p.id)>=0); }).join('') ||
+    '<span class="eyebrow">No saved players yet &mdash; add one below.</span>';
+  var starterOptions = s.selected.map(function(id){
+    var p = getPlayer(id);
+    var on = s.starter===id;
+    return '<button type="button" class="btn '+(on?'on':'')+'" data-action="pick-starter" data-id="'+id+'">'+esc(p.name)+'</button>';
+  }).join('');
+
+  return ''+
+  '<div class="card">'+
+    '<h2 class="chalk" style="font-size:1.4rem; margin-bottom:14px;">501 / 301 setup</h2>'+
+    '<label class="field">Starting score'+
+      '<div class="seg" style="margin-top:6px;">'+scoreBtn(501)+scoreBtn(301)+
+        '<button type="button" class="btn '+(s.customScore?'on':'')+'" data-action="std-score-custom">Custom</button>'+
+      '</div>'+
+    '</label>'+
+    (s.customScore!==undefined ? '<div style="margin-top:10px;"><input type="number" min="2" max="999" placeholder="e.g. 701" id="customScoreInput" value="'+(s.customScore||'')+'"/></div>' : '')+
+    '<div style="height:14px;"></div>'+
+    '<label class="field">Match length'+
+      '<div class="seg" style="margin-top:6px;">'+legBtn(1,'Single leg')+legBtn(2,'Best of 3')+legBtn(3,'Best of 5')+'</div>'+
+    '</label>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="eyebrow" style="margin-bottom:10px;">Players (choose 1&ndash;4)</div>'+
+    '<div class="btn-row" style="margin-bottom:12px;">'+chips+'</div>'+
+    '<form id="quickAddForm" style="display:flex; gap:10px;">'+
+      '<input type="text" name="name" placeholder="New player name" maxlength="24" autocomplete="off"/>'+
+      '<button class="btn" type="submit">Add &amp; select</button>'+
+    '</form>'+
+    (s.selected.length>=2 ? '<div style="height:14px;"></div><label class="field">Throws first<div class="btn-row" style="margin-top:6px;">'+starterOptions+'</div></label>' : '')+
+  '</div>'+
+  '<div class="btn-row">'+
+    '<button class="btn" data-action="nav" data-view="home">Cancel</button>'+
+    '<button class="btn primary" data-action="start-standard" '+(s.selected.length<1?'disabled':'')+'>Start match</button>'+
+  '</div>';
+}
+
+/* ===================== STANDARD: game ===================== */
+function newStandardGame(startScore, legsToWin, playerIds, starterId){
+  var players = playerIds.map(function(id){
+    var p = getPlayer(id);
+    return { id:id, name:p.name, legsWon:0, m_dartsThrown:0, m_totalScored:0, m_count180:0, m_count140:0, m_count100:0,
+              m_highestCheckout:0, legDartsThisLeg:0, bestLegDarts:null };
+  });
+  var starterIndex = 0;
+  if(starterId){ var idx = playerIds.indexOf(starterId); if(idx>=0) starterIndex = idx; }
+  return {
+    startScore:startScore, legsToWin:legsToWin, players:players,
+    scores:{}, legStarterIndex:starterIndex, currentIndex:starterIndex, legNumber:1,
+    undoStack:[], message:null
+  };
+}
+function resetLegScores(g){
+  g.players.forEach(function(pl){ g.scores[pl.id] = g.startScore; pl.legDartsThisLeg = 0; });
+  g.currentIndex = g.legStarterIndex;
+}
+
+function renderStandardGame(){
+  var g = session.standard;
+  if(!g){
+    var s = ui.pendingStandardSetup;
+    g = session.standard = newStandardGame(s.startScore, s.legsToWin, s.selected, s.starter);
+    resetLegScores(g);
+  }
+  var cards = g.players.map(function(pl, idx){
+    var active = idx===g.currentIndex;
+    var cls = 'score-card'+(active?' active':'');
+    return '<div class="'+cls+'">'+
+      (active?'<div class="turn-badge">Throwing</div>':'')+
+      '<div class="pname">'+esc(pl.name)+'</div>'+
+      '<div class="premain">'+g.scores[pl.id]+'</div>'+
+      '<div class="plegs">Legs: '+pl.legsWon+'/'+g.legsToWin+'</div>'+
+    '</div>';
+  }).join('');
+
+  var current = g.players[g.currentIndex];
+  var remaining = g.scores[current.id];
+
+  return ''+
+  '<div class="board-frame"><div class="board-surface">'+
+    '<div class="eyebrow" style="text-align:center; margin-bottom:10px;">Leg '+g.legNumber+' &middot; first to '+g.legsToWin+' leg'+(g.legsToWin>1?'s':'')+' &middot; double out</div>'+
+    '<div class="score-grid">'+cards+'</div>'+
+  '</div>'+
+  '<div class="chalk-tray"><span class="stick"></span><span class="eraser"></span><span class="dust"></span></div>'+
+  '</div>'+
+  (g.message ? '<div class="banner '+g.message.type+'">'+g.message.text+'</div>' : '')+
+  '<div class="btn-row" style="justify-content:center;">'+
+    '<button class="btn ghost" data-action="undo-turn" '+(g.undoStack.length?'':'disabled')+'>Undo last turn</button>'+
+    '<button class="btn danger" data-action="end-standard-match">End match</button>'+
+  '</div>'+
+  renderKeypad(current.name, remaining);
+}
+
+function renderKeypad(playerName, remaining){
+  var v = ui.input || '';
+  return ''+
+  '<div class="keypad-wrap"><div class="keypad">'+
+    '<div class="eyebrow" style="margin-bottom:8px;">'+esc(playerName)+'&rsquo;s turn &middot; needs '+remaining+'</div>'+
+    '<div class="display-row">'+
+      '<div class="input-display">'+(v ? v : '<span class="ph">Enter score for 3 darts</span>')+'</div>'+
+    '</div>'+
+    '<div class="quick-row">'+
+      [26,41,45,60,81,85,95,100,121,140,180].map(function(q){ return '<button data-action="quick" data-v="'+q+'">'+q+'</button>'; }).join('')+
+    '</div>'+
+    '<div class="padgrid">'+
+      [1,2,3,4,5,6,7,8,9].map(function(n){ return '<button data-action="digit" data-v="'+n+'">'+n+'</button>'; }).join('')+
+      '<button class="clear" data-action="clear">C</button>'+
+      '<button data-action="digit" data-v="0">0</button>'+
+      '<button data-action="backspace">&larr;</button>'+
+      '<button class="enter" data-action="submit-turn" style="grid-column:span 3;">Enter turn</button>'+
+    '</div>'+
+  '</div></div>';
+}
+
+function renderModal(){
+  if(!ui.modal) return '';
+  if(ui.modal.type==='confirmDouble'){
+    return '<div class="modal-backdrop"><div class="modal">'+
+      '<h3 class="chalk">Checkout! &#127919;</h3>'+
+      '<p>Did that finish on a double?</p>'+
+      '<div class="btn-row"><button class="btn primary" data-action="modal-double-yes">Yes, doubled out</button>'+
+      '<button class="btn danger" data-action="modal-double-no">No &mdash; missed it</button></div>'+
+    '</div></div>';
+  }
+  if(ui.modal.type==='dartsUsed'){
+    return '<div class="modal-backdrop"><div class="modal">'+
+      '<h3 class="chalk">Nice finish!</h3>'+
+      '<p>How many darts did that checkout take?</p>'+
+      '<div class="btn-row">'+[1,2,3].map(function(n){return '<button class="btn primary" data-action="modal-darts-used" data-v="'+n+'">'+n+'</button>';}).join('')+'</div>'+
+    '</div></div>';
+  }
+  if(ui.modal.type==='confirm'){
+    var m = ui.modal;
+    return '<div class="modal-backdrop"><div class="modal">'+
+      '<h3 class="chalk">'+esc(m.title)+'</h3>'+
+      '<p>'+esc(m.body)+'</p>'+
+      '<div class="btn-row">'+
+        '<button class="btn '+(m.danger?'danger':'primary')+'" data-action="modal-confirm-yes">'+esc(m.confirmLabel||'Yes')+'</button>'+
+        '<button class="btn ghost" data-action="modal-confirm-no">Cancel</button>'+
+      '</div>'+
+    '</div></div>';
+  }
+  if(ui.modal.type==='rename'){
+    var m = ui.modal;
+    return '<div class="modal-backdrop"><div class="modal">'+
+      '<h3 class="chalk">Rename player</h3>'+
+      '<form id="renameForm">'+
+        '<input type="text" id="renameInput" value="'+esc(m.value)+'" maxlength="24" autocomplete="off" style="margin-bottom:14px;"/>'+
+        '<div class="btn-row">'+
+          '<button class="btn primary" type="submit">Save</button>'+
+          '<button class="btn ghost" type="button" data-action="modal-confirm-no">Cancel</button>'+
+        '</div>'+
+      '</form>'+
+    '</div></div>';
+  }
+  if(ui.modal.type==='settings'){
+    var opts = [
+      { id:'classic', name:'Classic', desc:'Paper scorecard by day, chalkboard by night — follows your device theme.' },
+      { id:'neon', name:'Neon Arcade', desc:'Dark glass and glowing digits, like an electronic dartboard machine.' }
+    ];
+    return '<div class="modal-backdrop"><div class="modal">'+
+      '<h3 class="chalk">Look &amp; feel</h3>'+
+      '<div style="display:flex; flex-direction:column; gap:10px; margin:14px 0;">'+
+      opts.map(function(o){
+        var on = appTheme===o.id;
+        return '<button type="button" class="btn '+(on?'on':'')+'" data-action="set-theme" data-id="'+o.id+'" '+
+          'style="text-align:left; padding:14px; height:auto; display:flex; flex-direction:column; gap:3px;">'+
+          '<span style="font-weight:700;">'+esc(o.name)+(on?' &#10003;':'')+'</span>'+
+          '<span style="font-weight:400; font-size:0.8rem; opacity:0.85;">'+esc(o.desc)+'</span>'+
+        '</button>';
+      }).join('')+
+      '</div>'+
+      '<div class="btn-row"><button class="btn primary" data-action="modal-confirm-no">Done</button></div>'+
+    '</div></div>';
+  }
+  return '';
+}
+
+function tallyCount(n, turnScore){
+  if(turnScore===180) n.c180++;
+  else if(turnScore>=140) n.c140++;
+  else if(turnScore>=100) n.c100++;
+}
+
+function snapshotStandard(g){ return JSON.parse(JSON.stringify(g)); }
+
+function submitStandardTurn(turnScore){
+  var g = session.standard;
+  var pl = g.players[g.currentIndex];
+  var remaining = g.scores[pl.id];
+  var after = remaining - turnScore;
+
+  g.undoStack.push(snapshotStandard(g));
+
+  if(after < 0 || after === 1){
+    pl.m_dartsThrown += 3; pl.legDartsThisLeg += 3;
+    var t={c180:0,c140:0,c100:0}; tallyCount(t, turnScore);
+    pl.m_count180+=t.c180; pl.m_count140+=t.c140; pl.m_count100+=t.c100;
+    g.message = { type:'bust', text: esc(pl.name)+' busts on '+turnScore+' &mdash; stays on '+remaining+'.' };
+    advanceStandardTurn(g);
+    render();
+    return;
+  }
+  if(after === 0){
+    ui.modal = { type:'confirmDouble', turnScore: turnScore };
+    render();
+    return;
+  }
+  applyStandardScore(turnScore, 3, false);
+}
+
+function applyStandardScore(turnScore, dartsUsed, isCheckout){
+  var g = session.standard;
+  var pl = g.players[g.currentIndex];
+  var remaining = g.scores[pl.id];
+  g.scores[pl.id] = remaining - turnScore;
+  pl.m_dartsThrown += dartsUsed; pl.legDartsThisLeg += dartsUsed;
+  pl.m_totalScored += turnScore;
+  var t={c180:0,c140:0,c100:0}; tallyCount(t, turnScore);
+  pl.m_count180+=t.c180; pl.m_count140+=t.c140; pl.m_count100+=t.c100;
+
+  if(isCheckout){
+    pl.legsWon += 1;
+    if(turnScore > pl.m_highestCheckout) pl.m_highestCheckout = turnScore;
+    if(pl.bestLegDarts===null || pl.legDartsThisLeg < pl.bestLegDarts) pl.bestLegDarts = pl.legDartsThisLeg;
+    g.message = { type:'win', text: esc(pl.name)+' checks out '+turnScore+'! Leg to '+esc(pl.name)+'.' };
+
+    if(pl.legsWon >= g.legsToWin){
+      finishStandardMatch(g);
+      return;
+    }
+    g.legNumber += 1;
+    g.legStarterIndex = (g.legStarterIndex+1) % g.players.length;
+    resetLegScores(g);
+    render();
+    return;
+  }
+  g.message = null;
+  advanceStandardTurn(g);
+  render();
+}
+function advanceStandardTurn(g){
+  g.currentIndex = (g.currentIndex+1) % g.players.length;
+}
+
+function finishStandardMatch(g){
+  var totalLegs = g.players.reduce(function(m,p){ return Math.max(m,p.legsWon); },0) +
+                   Math.max(0, g.legsToWin-1); // approx legs played count fallback
+  var legsPlayed = g.legNumber; // number of legs completed/attempted
+  g.players.forEach(function(pl){
+    var prof = getPlayer(pl.id);
+    if(!prof) return;
+    var s = prof.stats.standard;
+    s.gamesPlayed += 1;
+    if(pl.legsWon >= g.legsToWin) s.gamesWon += 1;
+    s.legsPlayed += legsPlayed;
+    s.legsWon += pl.legsWon;
+    s.dartsThrown += pl.m_dartsThrown;
+    s.totalScored += pl.m_totalScored;
+    s.count180 += pl.m_count180;
+    s.count140 += pl.m_count140;
+    s.count100 += pl.m_count100;
+    if(pl.m_highestCheckout > s.highestCheckout) s.highestCheckout = pl.m_highestCheckout;
+    if(pl.bestLegDarts!==null && (s.bestLegDarts===null || pl.bestLegDarts < s.bestLegDarts)) s.bestLegDarts = pl.bestLegDarts;
+    prof.lastPlayed = new Date().toISOString();
+  });
+  saveState();
+
+  var winner = g.players.reduce(function(a,b){ return b.legsWon>a.legsWon?b:a; }, g.players[0]);
+  pushHistory({
+    mode:'standard', startScore:g.startScore,
+    playerNames: g.players.map(function(p){return p.name;}),
+    summary: g.players.length>1 ? (winner.name+' won '+winner.legsWon+'-'+ (g.players.length===2? g.players.filter(function(p){return p.id!==winner.id;})[0].legsWon : '') ) : 'Practice session'
+  });
+
+  session.standard = null;
+  nav('standardSummary', {}, { finalGame: g });
+}
+
+function renderStandardSummary(){
+  var g = ui.finalGame;
+  if(!g) return renderHome();
+  var rows = g.players.slice().sort(function(a,b){return b.legsWon-a.legsWon;}).map(function(pl){
+    var avg = avg3(pl.m_totalScored, pl.m_dartsThrown);
+    return '<div class="lb-row"><div class="avatar" style="background:'+avatarColor(pl.id)+'">'+esc(initials(pl.name))+'</div>'+
+      '<div class="lb-name">'+esc(pl.name)+' &mdash; '+pl.legsWon+' leg'+(pl.legsWon===1?'':'s')+'</div>'+
+      '<div class="lb-stat">'+fmtAvg(avg)+' avg</div></div>';
+  }).join('');
+  return '<div class="card" style="text-align:center;">'+
+    '<div class="eyebrow">Match complete</div>'+
+    '<h2 class="chalk" style="font-size:1.8rem; margin:6px 0 16px;">Game shot!</h2>'+
+    rows+
+    '<div class="btn-row" style="justify-content:center; margin-top:18px;">'+
+      '<button class="btn primary" data-action="nav" data-view="standardSetup">Rematch setup</button>'+
+      '<button class="btn" data-action="nav" data-view="home">Home</button>'+
+    '</div>'+
+  '</div>';
+}
+
+/* ===================== 121 GAME: setup ===================== */
+function ensureOneOneSetup(){
+  if(!ui.setup121) ui.setup121 = { target:121, selected:[], starter:null };
+  return ui.setup121;
+}
+function renderOneTwoOneSetup(){
+  var s = ensureOneOneSetup();
+  var chips = state.players.map(function(p){ return renderPlayerChip(p, s.selected.indexOf(p.id)>=0); }).join('') ||
+    '<span class="eyebrow">No saved players yet &mdash; add one below.</span>';
+  var starterOptions = s.selected.map(function(id){
+    var p = getPlayer(id);
+    var on = s.starter===id;
+    return '<button type="button" class="btn '+(on?'on':'')+'" data-action="pick-starter" data-id="'+id+'">'+esc(p.name)+'</button>';
+  }).join('');
+
+  return ''+
+  '<div class="card">'+
+    '<h2 class="chalk" style="font-size:1.4rem; margin-bottom:14px;">121 Game setup</h2>'+
+    '<label class="field">Starting target'+
+      '<input type="number" min="2" max="999" id="targetInput" value="'+s.target+'" style="margin-top:6px; max-width:160px;"/>'+
+    '</label>'+
+    '<p class="eyebrow" style="margin-top:10px; text-transform:none; letter-spacing:0; line-height:1.5;">Two efforts of nine darts (three alternating turns) to hit the target exactly, finishing on a double. Miss both efforts and the target drops by one; nail it and it climbs by one.</p>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="eyebrow" style="margin-bottom:10px;">Players (choose exactly 2)</div>'+
+    '<div class="btn-row" style="margin-bottom:12px;">'+chips+'</div>'+
+    '<form id="quickAddForm121" style="display:flex; gap:10px; margin-bottom:14px;">'+
+      '<input type="text" name="name" placeholder="New player name" maxlength="24" autocomplete="off"/>'+
+      '<button class="btn" type="submit">Add &amp; select</button>'+
+    '</form>'+
+    (s.selected.length===2 ? '<label class="field">Throws first<div class="btn-row" style="margin-top:6px;">'+starterOptions+'</div></label>' : '')+
+  '</div>'+
+  '<div class="btn-row">'+
+    '<button class="btn" data-action="nav" data-view="home">Cancel</button>'+
+    '<button class="btn primary" data-action="start-121" '+(s.selected.length===2 && s.starter ? '' : 'disabled')+'>Start session</button>'+
+  '</div>';
+}
+
+/* ===================== 121 GAME: play ===================== */
+function newOneOneGame(target, ids, starterId){
+  var players = ids.map(function(id){
+    var p = getPlayer(id);
+    return { id:id, name:p.name, dartsThrown:0, totalScored:0, highestCheckout:0, count180:0 };
+  });
+  var starterIndex = players[0].id===starterId ? 0 : 1;
+  return {
+    target:target, startTarget:target, players:players,
+    startingPlayerIndex: starterIndex, currentPlayerIndex: starterIndex,
+    effortNumber:1, turnInEffort:1, remaining:target,
+    roundsPlayed:0, roundsWon:0, bestTargetHit:0, history:[], undoStack:[], message:null
+  };
+}
+function renderOneTwoOneGame(){
+  var g = session.oneTwoOne;
+  if(!g){
+    var s = ui.pendingOneOneSetup;
+    g = session.oneTwoOne = newOneOneGame(s.target, s.selected, s.starter);
+  }
+  var current = g.players[g.currentPlayerIndex];
+  var other = g.players[(g.currentPlayerIndex+1)%2];
+
+  var playerCards = g.players.map(function(pl,idx){
+    var active = idx===g.currentPlayerIndex;
+    var pAvg = avg3(pl.totalScored, pl.dartsThrown);
+    return '<div class="score-card'+(active?' active':'')+'">'+
+      (active?'<div class="turn-badge">On the oche</div>':'')+
+      '<div class="pname">'+esc(pl.name)+'</div>'+
+      '<div class="plegs">'+fmtAvg(pAvg)+' avg this session</div>'+
+    '</div>';
+  }).join('');
+
+  var turnDots = [1,2,3].map(function(n){
+    var cls='dot'+(n<g.turnInEffort?' done':(n===g.turnInEffort?' on':''));
+    return '<span class="'+cls+'"></span>';
+  }).join('');
+  var effortDots = [1,2].map(function(n){
+    var cls='dot'+(n<g.effortNumber?' done':(n===g.effortNumber?' on':''));
+    return '<span class="'+cls+'"></span>';
+  }).join('');
+
+  return ''+
+  '<div class="board-frame"><div class="board-surface">'+
+    '<div class="target-hero">'+
+      '<div class="eyebrow">Target &middot; '+esc(g.players[0].name)+' &amp; '+esc(g.players[1].name)+'</div>'+
+      '<div class="tval">'+g.remaining+' <span style="font-size:1.4rem; color:var(--ink-muted);">of '+g.target+'</span></div>'+
+      '<div class="tmeta">Effort '+g.effortNumber+' of 2 <span class="dots" style="display:inline-flex; vertical-align:middle; margin:0 8px;">'+effortDots+'</span> &middot; Turn '+g.turnInEffort+' of 3 <span class="dots" style="display:inline-flex; vertical-align:middle; margin:0 8px;">'+turnDots+'</span></div>'+
+      '<div class="tally" style="justify-content:center; display:flex;">'+tallySVG(g.roundsWon)+'</div>'+
+      '<div class="tally-num">'+g.roundsWon+' round'+(g.roundsWon===1?'':'s')+' won together'+(g.roundsPlayed>g.roundsWon?' &middot; '+g.roundsPlayed+' played':'')+'</div>'+
+    '</div>'+
+    '<div class="oneone-players" style="margin-top:12px;">'+playerCards+'</div>'+
+  '</div>'+
+  '<div class="chalk-tray"><span class="stick"></span><span class="eraser"></span><span class="dust"></span></div>'+
+  '</div>'+
+  (g.message ? '<div class="banner '+g.message.type+'">'+g.message.text+'</div>' : '')+
+  '<div class="btn-row" style="justify-content:center;">'+
+    '<button class="btn ghost" data-action="undo-121" '+(g.undoStack.length?'':'disabled')+'>Undo last turn</button>'+
+    '<button class="btn danger" data-action="end-121-session">End session</button>'+
+  '</div>'+
+  renderKeypad121(current.name, g.remaining);
+}
+function renderKeypad121(playerName, remaining){
+  var v = ui.input || '';
+  return ''+
+  '<div class="keypad-wrap"><div class="keypad">'+
+    '<div class="eyebrow" style="margin-bottom:8px;">'+esc(playerName)+'&rsquo;s throw &middot; needs '+remaining+'</div>'+
+    '<div class="display-row"><div class="input-display">'+(v?v:'<span class="ph">Enter score for 3 darts</span>')+'</div></div>'+
+    '<div class="quick-row">'+
+      [26,41,45,60,81,85,95,100,121,140,180].map(function(q){ return '<button data-action="quick" data-v="'+q+'">'+q+'</button>'; }).join('')+
+    '</div>'+
+    '<div class="padgrid">'+
+      [1,2,3,4,5,6,7,8,9].map(function(n){ return '<button data-action="digit" data-v="'+n+'">'+n+'</button>'; }).join('')+
+      '<button class="clear" data-action="clear">C</button>'+
+      '<button data-action="digit" data-v="0">0</button>'+
+      '<button data-action="backspace">&larr;</button>'+
+      '<button class="enter" data-action="submit-121" style="grid-column:span 3;">Enter turn</button>'+
+    '</div>'+
+  '</div></div>';
+}
+function tallySVG(n){
+  if(n<=0) return '<svg width="1" height="24"></svg>';
+  var groups = Math.floor(n/5), rem = n%5;
+  var x = 2, w = 0;
+  var strokes = [];
+  function group5(gx){
+    for(var i=0;i<4;i++){ strokes.push('<line x1="'+(gx+i*5)+'" y1="4" x2="'+(gx+i*5)+'" y2="22" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round"/>'); }
+    strokes.push('<line x1="'+(gx-2)+'" y1="20" x2="'+(gx+17)+'" y2="6" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round"/>');
+    return gx+24;
+  }
+  for(var i=0;i<groups;i++){ x = group5(x)+6; }
+  for(var i=0;i<rem;i++){ strokes.push('<line x1="'+x+'" y1="4" x2="'+x+'" y2="22" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round"/>'); x+=5; }
+  w = x+4;
+  return '<svg width="'+w+'" height="24" viewBox="0 0 '+w+' 24">'+strokes.join('')+'</svg>';
+}
+
+function snapshot121(g){ return JSON.parse(JSON.stringify(g)); }
+
+function submit121Turn(turnScore){
+  var g = session.oneTwoOne;
+  var pl = g.players[g.currentPlayerIndex];
+  var after = g.remaining - turnScore;
+  g.undoStack.push(snapshot121(g));
+
+  if(after < 0 || after === 1){
+    pl.dartsThrown += 3;
+    if(turnScore===180) pl.count180++;
+    g.message = { type:'bust', text: esc(pl.name)+' busts on '+turnScore+' &mdash; target stays on '+g.remaining+'.' };
+    advance121Turn();
+    render();
+    return;
+  }
+  if(after === 0){
+    ui.modal = { type:'confirmDouble', turnScore: turnScore, mode121:true };
+    render();
+    return;
+  }
+  apply121Score(turnScore, 3, false);
+}
+
+function apply121Score(turnScore, dartsUsed, isFinish){
+  var g = session.oneTwoOne;
+  var pl = g.players[g.currentPlayerIndex];
+  pl.dartsThrown += dartsUsed;
+  pl.totalScored += turnScore;
+  if(turnScore===180) pl.count180++;
+
+  if(isFinish){
+    g.roundsWon += 1;
+    g.roundsPlayed += 1;
+    if(turnScore > pl.highestCheckout) pl.highestCheckout = turnScore;
+    if(g.target > g.bestTargetHit) g.bestTargetHit = g.target;
+    g.history.unshift({ result:'won', target:g.target, winner:pl.name, turnScore:turnScore });
+    g.message = { type:'win', text: esc(pl.name)+' finishes '+g.target+' with '+turnScore+'! Target climbs to '+(g.target+1)+'.' };
+    g.target += 1;
+    g.effortNumber = 1; g.turnInEffort = 1;
+    g.startingPlayerIndex = (g.startingPlayerIndex+1)%2;
+    g.currentPlayerIndex = g.startingPlayerIndex;
+    g.remaining = g.target;
+    render();
+    return;
+  }
+
+  g.remaining -= turnScore;
+  g.message = null;
+  advance121Turn();
+  render();
+}
+
+function advance121Turn(){
+  var g = session.oneTwoOne;
+  g.turnInEffort += 1;
+  if(g.turnInEffort > 3){
+    if(g.effortNumber===1){
+      g.effortNumber = 2; g.turnInEffort = 1;
+      g.startingPlayerIndex = (g.startingPlayerIndex+1)%2;
+      g.currentPlayerIndex = g.startingPlayerIndex;
+      g.remaining = g.target;
+    } else {
+      g.roundsPlayed += 1;
+      g.history.unshift({ result:'failed', target:g.target });
+      g.message = { type:'info', text:'Both efforts missed '+g.target+' &mdash; target drops to '+(g.target-1)+'.' };
+      g.target = Math.max(2, g.target-1);
+      g.effortNumber = 1; g.turnInEffort = 1;
+      g.startingPlayerIndex = (g.startingPlayerIndex+1)%2;
+      g.currentPlayerIndex = g.startingPlayerIndex;
+      g.remaining = g.target;
+    }
+  } else {
+    g.currentPlayerIndex = g.turnInEffort % 2 === 1 ? g.startingPlayerIndex : (g.startingPlayerIndex+1)%2;
+  }
+}
+
+function endOneOneSession(){
+  var g = session.oneTwoOne;
+  g.players.forEach(function(pl){
+    var prof = getPlayer(pl.id);
+    if(!prof) return;
+    var s = prof.stats.oneTwoOne;
+    s.sessionsPlayed += 1;
+    s.roundsPlayed += g.roundsPlayed;
+    s.roundsWon += g.roundsWon;
+    s.dartsThrown += pl.dartsThrown;
+    s.totalScored += pl.totalScored;
+    s.count180 += pl.count180;
+    if(pl.highestCheckout > s.highestCheckout) s.highestCheckout = pl.highestCheckout;
+    if(g.bestTargetHit > s.bestTargetHit) s.bestTargetHit = g.bestTargetHit;
+    prof.lastPlayed = new Date().toISOString();
+  });
+  saveState();
+  pushHistory({
+    mode:'121', startScore:g.startTarget,
+    playerNames: g.players.map(function(p){return p.name;}),
+    summary: g.roundsWon+' of '+g.roundsPlayed+' round'+(g.roundsPlayed===1?'':'s')+' won together'
+  });
+  session.oneTwoOne = null;
+  nav('oneTwoOneSummary', {}, { finalGame121: g });
+}
+function renderOneTwoOneSummary(){
+  var g = ui.finalGame121;
+  if(!g) return renderHome();
+  var rows = g.players.map(function(pl){
+    var avg = avg3(pl.totalScored, pl.dartsThrown);
+    return '<div class="lb-row"><div class="avatar" style="background:'+avatarColor(pl.id)+'">'+esc(initials(pl.name))+'</div>'+
+      '<div class="lb-name">'+esc(pl.name)+'</div>'+
+      '<div class="lb-stat">'+fmtAvg(avg)+' avg</div></div>';
+  }).join('');
+  return '<div class="card" style="text-align:center;">'+
+    '<div class="eyebrow">Session complete</div>'+
+    '<h2 class="chalk" style="font-size:1.8rem; margin:6px 0 16px;">Chalk it up!</h2>'+
+    '<div class="tally" style="justify-content:center; display:flex;">'+tallySVG(g.roundsWon)+'</div>'+
+    '<div class="tally-num" style="margin-bottom:14px;">'+g.roundsWon+' of '+g.roundsPlayed+' round'+(g.roundsPlayed===1?'':'s')+' won together</div>'+
+    rows+
+    '<div class="eyebrow" style="margin-top:14px;">Best target reached: '+(g.bestTargetHit||g.startTarget)+'</div>'+
+    '<div class="btn-row" style="justify-content:center; margin-top:18px;">'+
+      '<button class="btn primary" data-action="nav" data-view="oneTwoOneSetup">Play again</button>'+
+      '<button class="btn" data-action="nav" data-view="home">Home</button>'+
+    '</div>'+
+  '</div>';
+}
+
+/* ===================== event delegation ===================== */
+app.addEventListener('click', function(e){
+  var el = e.target.closest('[data-action]');
+  if(!el) return;
+  var action = el.dataset.action;
+
+  if(action==='nav'){ nav(el.dataset.view, el.dataset.id?{id:el.dataset.id}:{}); return; }
+
+  if(action==='toggle-player'){
+    var id = el.dataset.id;
+    var s = view.name==='oneTwoOneSetup' ? ensureOneOneSetup() : ensureSetup();
+    var idx = s.selected.indexOf(id);
+    if(idx>=0){ s.selected.splice(idx,1); }
+    else {
+      if(view.name==='oneTwoOneSetup' && s.selected.length>=2) return;
+      if(view.name==='standardSetup' && s.selected.length>=4) return;
+      s.selected.push(id);
+    }
+    if(s.selected.length===0) s.starter = null;
+    else if(!s.starter || s.selected.indexOf(s.starter)<0) s.starter = s.selected[0];
+    render(); return;
+  }
+  if(action==='pick-starter'){
+    var s = view.name==='oneTwoOneSetup' ? ensureOneOneSetup() : ensureSetup();
+    s.starter = el.dataset.id; render(); return;
+  }
+
+  if(action==='std-score'){ var s=ensureSetup(); s.startScore=parseInt(el.dataset.v,10); delete s.customScore; render(); return; }
+  if(action==='std-score-custom'){ var s=ensureSetup(); s.customScore = s.customScore || 701; s.startScore = s.customScore; render();
+    setTimeout(function(){ var inp=document.getElementById('customScoreInput'); if(inp) inp.focus(); },0); return; }
+  if(action==='std-legs'){ ensureSetup().legsToWin = parseInt(el.dataset.v,10); render(); return; }
+
+  if(action==='start-standard'){
+    var s = ensureSetup();
+    var score = s.customScore ? clamp(parseInt(s.customScore,10)||501,2,999) : s.startScore;
+    var pendingStandardSetup = { startScore:score, legsToWin:s.legsToWin, selected:s.selected.slice(), starter:s.starter||s.selected[0] };
+    nav('standardGame', {}, { pendingStandardSetup: pendingStandardSetup }); return;
+  }
+  if(action==='start-121'){
+    var s = ensureOneOneSetup();
+    var pendingOneOneSetup = { target: clamp(parseInt(s.target,10)||121,2,999), selected:s.selected.slice(), starter:s.starter };
+    nav('oneTwoOneGame', {}, { pendingOneOneSetup: pendingOneOneSetup }); return;
+  }
+
+  if(action==='digit'){ ui.input = (ui.input||'') ; if((ui.input+el.dataset.v).length<=3){ ui.input = (ui.input==='0'?'':ui.input) + el.dataset.v; } render(); return; }
+  if(action==='clear'){ ui.input=''; render(); return; }
+  if(action==='backspace'){ ui.input = (ui.input||'').slice(0,-1); render(); return; }
+  if(action==='quick'){ ui.input = el.dataset.v; render(); return; }
+
+  if(action==='submit-turn'){
+    var n = clamp(parseInt(ui.input||'0',10),0,180);
+    ui.input=''; submitStandardTurn(n); return;
+  }
+  if(action==='submit-121'){
+    var n = clamp(parseInt(ui.input||'0',10),0,180);
+    ui.input=''; submit121Turn(n); return;
+  }
+
+  if(action==='modal-double-yes'){
+    var ts = ui.modal.turnScore, mode121 = ui.modal.mode121;
+    ui.modal = { type:'dartsUsed', turnScore:ts, mode121:mode121 };
+    render(); return;
+  }
+  if(action==='modal-double-no'){
+    var ts = ui.modal.turnScore, mode121 = ui.modal.mode121;
+    ui.modal = null;
+    if(mode121){
+      var g=session.oneTwoOne; var pl=g.players[g.currentPlayerIndex]; pl.dartsThrown+=3; if(ts===180) pl.count180++;
+      g.message = { type:'bust', text: esc(pl.name)+' missed the double &mdash; target stays on '+g.remaining+'.' };
+      advance121Turn(); render();
+    } else {
+      var g=session.standard; var pl=g.players[g.currentIndex]; pl.m_dartsThrown+=3; pl.legDartsThisLeg+=3;
+      var t={c180:0,c140:0,c100:0}; tallyCount(t, ts); pl.m_count180+=t.c180; pl.m_count140+=t.c140; pl.m_count100+=t.c100;
+      g.message = { type:'bust', text: esc(pl.name)+' missed the double &mdash; stays on '+g.scores[pl.id]+'.' };
+      advanceStandardTurn(g); render();
+    }
+    return;
+  }
+  if(action==='modal-darts-used'){
+    var used = parseInt(el.dataset.v,10);
+    var ts = ui.modal.turnScore, mode121 = ui.modal.mode121;
+    ui.modal = null;
+    if(mode121) apply121Score(ts, used, true);
+    else applyStandardScore(ts, used, true);
+    return;
+  }
+
+  if(action==='undo-turn'){
+    var g = session.standard; if(g.undoStack.length){ session.standard = g.undoStack[g.undoStack.length-1]; session.standard.undoStack = g.undoStack.slice(0,-1); }
+    render(); return;
+  }
+  if(action==='undo-121'){
+    var g = session.oneTwoOne; if(g.undoStack.length){ session.oneTwoOne = g.undoStack[g.undoStack.length-1]; session.oneTwoOne.undoStack = g.undoStack.slice(0,-1); }
+    render(); return;
+  }
+  if(action==='end-standard-match'){
+    ui.modal = { type:'confirm', title:'End match?', body:'No winner will be recorded for this match.', confirmLabel:'End match', danger:true, onYes:function(){ session.standard=null; nav('home'); } };
+    render(); return;
+  }
+  if(action==='end-121-session'){
+    ui.modal = { type:'confirm', title:'End session?', body:'This will save the stats so far to both players’ profiles.', confirmLabel:'End session', danger:true, onYes:function(){ endOneOneSession(); } };
+    render(); return;
+  }
+
+  if(action==='rename-player'){
+    var p = getPlayer(el.dataset.id); if(!p) return;
+    ui.modal = { type:'rename', id:p.id, value:p.name };
+    render(); return;
+  }
+  if(action==='reset-player-stats'){
+    var p = getPlayer(el.dataset.id); if(!p) return;
+    ui.modal = { type:'confirm', title:'Reset stats?', body:'This clears all recorded stats for '+p.name+'. This cannot be undone.', confirmLabel:'Reset stats', danger:true, onYes:function(){ p.stats = freshPlayerStats(); saveState(); render(); } };
+    render(); return;
+  }
+  if(action==='delete-player'){
+    var p = getPlayer(el.dataset.id); if(!p) return;
+    ui.modal = { type:'confirm', title:'Delete player?', body:'This removes '+p.name+' and all their stats for good.', confirmLabel:'Delete', danger:true, onYes:function(){
+      state.players = state.players.filter(function(x){return x.id!==p.id;});
+      saveState(); nav('players');
+    } };
+    render(); return;
+  }
+  if(action==='modal-confirm-yes'){
+    var fn = ui.modal && ui.modal.onYes;
+    ui.modal = null;
+    if(fn) fn(); else render();
+    return;
+  }
+  if(action==='modal-confirm-no'){
+    ui.modal = null; render(); return;
+  }
+  if(action==='set-theme'){
+    setTheme(el.dataset.id);
+    render(); return;
+  }
+});
+
+app.addEventListener('submit', function(e){
+  if(e.target.id==='addPlayerForm'){
+    e.preventDefault();
+    var input = e.target.elements.name;
+    addPlayer(input.value);
+    render();
+  }
+  if(e.target.id==='quickAddForm'){
+    e.preventDefault();
+    var input = e.target.elements.name;
+    var p = addPlayer(input.value);
+    if(p){ var s=ensureSetup(); if(s.selected.length<4) s.selected.push(p.id); }
+    render();
+  }
+  if(e.target.id==='quickAddForm121'){
+    e.preventDefault();
+    var input = e.target.elements.name;
+    var p = addPlayer(input.value);
+    if(p){ var s=ensureOneOneSetup(); if(s.selected.length<2){ s.selected.push(p.id); if(s.selected.length===2 && !s.starter) s.starter=s.selected[0]; } }
+    render();
+  }
+  if(e.target.id==='renameForm'){
+    e.preventDefault();
+    var p = getPlayer(ui.modal.id);
+    var name = document.getElementById('renameInput').value;
+    if(p && name && name.trim()){ p.name = name.trim().slice(0,24); saveState(); }
+    ui.modal = null;
+    render();
+  }
+});
+
+app.addEventListener('input', function(e){
+  if(e.target.id==='customScoreInput'){
+    var s = ensureSetup();
+    s.customScore = e.target.value;
+    s.startScore = clamp(parseInt(e.target.value,10)||0,2,999);
+  }
+  if(e.target.id==='targetInput'){
+    var s = ensureOneOneSetup();
+    s.target = e.target.value;
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
