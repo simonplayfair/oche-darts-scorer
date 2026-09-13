@@ -1,16 +1,14 @@
-const { put, list } = require('@vercel/blob');
+const { put, get } = require('@vercel/blob');
 
 const BLOB_PATH = 'oche-state.json';
+const EMPTY = { players: [], history: [], rev: 0 };
 
 async function readState() {
-  const { blobs } = await list({ prefix: BLOB_PATH, limit: 10 });
-  const blob = blobs.find(function (b) { return b.pathname === BLOB_PATH; });
-  if (!blob) return { players: [], history: [], rev: 0 };
-  // Cache-bust: blob URLs sit behind a CDN, and a stale read here would show
-  // one device an out-of-date scoreboard.
-  const resp = await fetch(blob.url + '?t=' + Date.now(), { cache: 'no-store' });
-  if (!resp.ok) return { players: [], history: [], rev: 0 };
-  const data = await resp.json();
+  // useCache:false reads from origin rather than the CDN — a stale read here
+  // would let one device overwrite another's newer scores.
+  const result = await get(BLOB_PATH, { access: 'private', useCache: false });
+  if (!result || result.statusCode !== 200 || !result.stream) return Object.assign({}, EMPTY);
+  const data = await new Response(result.stream).json();
   return {
     players: Array.isArray(data.players) ? data.players : [],
     history: Array.isArray(data.history) ? data.history : [],
@@ -47,7 +45,7 @@ module.exports = async function handler(req, res) {
       }
 
       await put(BLOB_PATH, JSON.stringify({ players: players, history: history, rev: clientRev }), {
-        access: 'public',
+        access: 'private',
         contentType: 'application/json',
         addRandomSuffix: false,
         allowOverwrite: true,

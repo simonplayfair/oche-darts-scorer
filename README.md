@@ -12,7 +12,7 @@ shared across every device that opens the page.
 
 ## Setup
 
-1. **Storage.** In the Vercel project: Storage → Create Database → Blob.
+1. **Storage.** In the Vercel project: Storage → Create Database → Blob, with access set to **Private**.
    Connect it to this project. Vercel then sets `BLOB_READ_WRITE_TOKEN`
    automatically — that's the only environment variable needed.
 
