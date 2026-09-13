@@ -296,7 +296,7 @@
   .score-card .turn-badge{
     position:absolute; top:-11px; left:50%; transform:translateX(-50%);
     background:var(--red); color:#fff; font-size:0.65rem; font-weight:700; text-transform:uppercase;
-    letter-spacing:0.08em; padding:3px 10px; border-radius:999px;
+    letter-spacing:0.08em; padding:3px 10px; border-radius:999px; white-space:nowrap;
   }
   .score-card .pname{ font-weight:700; font-size:0.95rem; margin-bottom:2px; }
   .score-card .premain{ font-family:var(--number-font); font-size:2.6rem; font-weight:600; line-height:1; font-variant-numeric:tabular-nums; text-shadow:var(--number-glow); }
@@ -323,7 +323,6 @@
   .chalk-tray .dust{ width:30px; height:4px; border-radius:50%; background:rgba(238,232,216,.35); filter:blur(1.5px); }
 
   .oneone-players{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media (max-width:520px){ .oneone-players{ grid-template-columns:1fr; } }
 
   .tally svg{ display:block; }
   .tally-row{ display:flex; align-items:center; gap:8px; justify-content:center; margin-top:6px; }
@@ -361,6 +360,37 @@
   .padgrid button:active{ background:var(--border); }
   .padgrid .enter{ grid-row:span 2; background:var(--green); border-color:var(--green); color:#fbfbf4; font-family:'Work Sans'; font-size:1rem; }
   .padgrid .clear{ color:var(--red); }
+  .keypad-head{ margin-bottom:2px; }
+  .keypad-head b{ color:var(--ink); font-size:1.05rem; font-family:var(--number-font); font-variant-numeric:tabular-nums; }
+  .keypad-meta{ font-size:0.72rem; color:var(--ink-muted); margin-bottom:8px; font-variant-numeric:tabular-nums; }
+
+  /* The keypad stays open for most of a game, so on a phone it has to earn
+     its height — otherwise it buries the scoreboard it exists to update. */
+  @media (max-width:640px){
+    main{ gap:10px; }
+    .shell{ padding-bottom:24px; }
+    header.top{ padding:calc(8px + env(safe-area-inset-top)) 16px 4px; }
+    .keypad{ padding:10px 10px calc(8px + env(safe-area-inset-bottom)); border-radius:14px 14px 0 0; }
+    .keypad-meta{ margin-bottom:7px; }
+    .display-row{ margin-bottom:7px; }
+    .input-display{ padding:5px 12px; font-size:1.5rem; min-height:1.35em; }
+    .quick-row{ gap:5px; padding-bottom:3px; margin-bottom:7px; }
+    .quick-row button{ padding:5px 10px; font-size:0.9rem; }
+    .padgrid{ gap:6px; }
+    .padgrid button{ padding:9px 0; font-size:1.15rem; }
+    .padgrid .enter{ padding:11px 0; }
+
+    .target-hero{ padding:12px; border-radius:14px; }
+    .target-hero .tval{ font-size:2.5rem; }
+    .target-hero .tmeta{ font-size:0.75rem; margin-top:4px; }
+    .tally-num{ font-size:0.95rem; }
+    .score-grid{ gap:8px; }
+    .score-card{ padding:9px; }
+    .score-card .pname{ font-size:0.85rem; }
+    .score-card .premain{ font-size:2rem; }
+    .score-card .plegs{ font-size:0.7rem; margin-top:2px; }
+    .oneone-players{ gap:8px; }
+  }
 
   /* ===== modal ===== */
   .modal-backdrop{
@@ -855,14 +885,25 @@ function renderStandardGame(){
     '<button class="btn ghost" data-action="undo-turn" '+(g.undoStack.length?'':'disabled')+'>Undo last turn</button>'+
     '<button class="btn danger" data-action="end-standard-match">End match</button>'+
   '</div>'+
-  renderKeypad(current.name, remaining);
+  renderKeypad(current.name, remaining, standardKeypadMeta(g));
 }
 
-function renderKeypad(playerName, remaining){
+// The keypad covers the board on a phone, so it carries the opponents'
+// scores itself rather than making you scroll for them mid-turn.
+function standardKeypadMeta(g){
+  var others = g.players.filter(function(pl, idx){ return idx !== g.currentIndex; });
+  if(!others.length) return 'Leg '+g.legNumber;
+  return 'Leg '+g.legNumber+' &middot; '+others.map(function(pl){
+    return esc(pl.name)+' '+g.scores[pl.id];
+  }).join(' &middot; ');
+}
+
+function renderKeypad(playerName, remaining, meta){
   var v = ui.input || '';
   return ''+
   '<div class="keypad-wrap"><div class="keypad">'+
-    '<div class="eyebrow" style="margin-bottom:8px;">'+esc(playerName)+'&rsquo;s turn &middot; needs '+remaining+'</div>'+
+    '<div class="eyebrow keypad-head">'+esc(playerName)+'&rsquo;s turn &middot; needs <b>'+remaining+'</b></div>'+
+    (meta ? '<div class="keypad-meta">'+meta+'</div>' : '')+
     '<div class="display-row">'+
       '<div class="input-display">'+(v ? v : '<span class="ph">Enter score for 3 darts</span>')+'</div>'+
     '</div>'+
@@ -1162,13 +1203,16 @@ function renderOneTwoOneGame(){
     '<button class="btn ghost" data-action="undo-121" '+(g.undoStack.length?'':'disabled')+'>Undo last turn</button>'+
     '<button class="btn danger" data-action="end-121-session">End session</button>'+
   '</div>'+
-  renderKeypad121(current.name, g.remaining);
+  renderKeypad121(current.name, g.remaining,
+    'Target ' + g.target + ' &middot; effort ' + g.effortNumber + ' of 2 &middot; turn ' +
+    g.turnInEffort + ' of 3 &middot; ' + g.roundsWon + ' won');
 }
-function renderKeypad121(playerName, remaining){
+function renderKeypad121(playerName, remaining, meta){
   var v = ui.input || '';
   return ''+
   '<div class="keypad-wrap"><div class="keypad">'+
-    '<div class="eyebrow" style="margin-bottom:8px;">'+esc(playerName)+'&rsquo;s throw &middot; needs '+remaining+'</div>'+
+    '<div class="eyebrow keypad-head">'+esc(playerName)+'&rsquo;s throw &middot; needs <b>'+remaining+'</b></div>'+
+    (meta ? '<div class="keypad-meta">'+meta+'</div>' : '')+
     '<div class="display-row"><div class="input-display">'+(v?v:'<span class="ph">Enter score for 3 darts</span>')+'</div></div>'+
     '<div class="quick-row">'+
       [26,41,45,60,81,85,95,100,121,140,180].map(function(q){ return '<button data-action="quick" data-v="'+q+'">'+q+'</button>'; }).join('')+
